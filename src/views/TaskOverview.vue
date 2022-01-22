@@ -12,10 +12,11 @@
       </select>
     </div>
     <v-table
+      :modelValue="simpleOverviewData"
       :headers="headers"
-      :data="simpleOverviewData"
       :actions="actions"
       @details="showDetails"
+      @update:modelValue="moveTask"
     />
   </div>
 </template>
@@ -52,16 +53,18 @@ export default defineComponent({
         ? this.$store.state.tasks.filter((task) => task.assignee === filterBy)
         : this.$store.state.tasks;
       return tasks.map((task) => [
+        task.id,
         task.topic,
         this.$store.getters.getUserFullNameById(task.assignee),
       ]);
     },
     actions() {
-      return this.$store.state.tasks.map((task) => [{
-        name: 'Details',
-        action: 'details',
-        data: task.id,
-      }]);
+      return [
+        {
+          name: 'Details',
+          action: 'details',
+        },
+      ];
     },
     taskDetails() {
       const taskId: string = this.selectedTaskId;
@@ -87,6 +90,11 @@ export default defineComponent({
     closeDetailsModal() {
       this.detailsModalOpened = false;
       this.selectedTaskId = '';
+    },
+    moveTask(e: any) {
+      if (e.moved) {
+        this.$store.dispatch('moveTask', { taskId: e.moved.element[0], newPos: e.moved.newIndex });
+      }
     },
   },
 });
