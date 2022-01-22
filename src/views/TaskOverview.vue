@@ -1,8 +1,16 @@
 <template>
-  <div>
+  <div class="content-container">
     <modal v-if="detailsModalOpened">
       <task-details :task="taskDetails" @close="closeDetailsModal" />
     </modal>
+    <div class="filter-select">
+      <span>Filter by assignee:</span>
+      <select v-model="filterByAssigneeId">
+        <option v-for="opt in assigneeFilterOptions" :key="opt.id" :value="opt.id">
+          {{ opt.name }}
+        </option>
+      </select>
+    </div>
     <v-table
       :headers="headers"
       :data="simpleOverviewData"
@@ -31,11 +39,19 @@ export default defineComponent({
       headers: ['Topic', 'Assignee name'],
       detailsModalOpened: false,
       selectedTaskId: '',
+      filterByAssigneeId: '',
     };
   },
   computed: {
     simpleOverviewData() {
-      return this.$store.state.tasks.map((task) => [
+      // typescript has some problems with computed
+      // never used typescript before with options api, so i have no idea what is going on
+      // if i use just `this.filterByAssigneeId` i get an error
+      const filterBy: string = this.filterByAssigneeId;
+      const tasks = filterBy
+        ? this.$store.state.tasks.filter((task) => task.assignee === filterBy)
+        : this.$store.state.tasks;
+      return tasks.map((task) => [
         task.topic,
         this.$store.getters.getUserFullNameById(task.assignee),
       ]);
@@ -57,6 +73,11 @@ export default defineComponent({
         reporter: this.$store.getters.getUserFullNameById(task.reporter),
       };
     },
+    assigneeFilterOptions() {
+      const users = this.$store.state.users
+        .map((user) => ({ name: this.$store.getters.getUserFullNameById(user.id), id: user.id }));
+      return [{ name: '', id: '' }].concat(users);
+    },
   },
   methods: {
     showDetails(id: Task['id']) {
@@ -70,3 +91,13 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.content-container {
+  display: flex;
+  flex-direction: column;
+}
+.filter-select {
+  margin: 1rem;
+}
+</style>
