@@ -89,6 +89,10 @@ export default createStore({
       const index = state.tasks.findIndex((t) => t.id === taskId);
       state.tasks.splice(index, 1);
     },
+    updateTask: (store, task) => {
+      const index = store.tasks.findIndex((t) => t.id === task.id);
+      store.tasks.splice(index, 1, task);
+    },
   },
   actions: {
     moveTask: (context, { taskId, newPos }) => {
@@ -96,6 +100,12 @@ export default createStore({
     },
     deleteTask: (context, taskId) => {
       context.commit('deleteTask', taskId);
+      return new Promise((resolve) => {
+        resolve('ok');
+      });
+    },
+    updateTask: (context, task) => {
+      context.commit('updateTask', task);
       return new Promise((resolve) => {
         resolve('ok');
       });

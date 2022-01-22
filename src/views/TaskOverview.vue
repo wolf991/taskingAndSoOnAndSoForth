@@ -19,6 +19,9 @@
         </div>
       </div>
     </modal>
+    <modal v-if="editModalOpened">
+      <task-form :task="taskToEdit" @close="closeEditDialog" />
+    </modal>
     <div class="filter-select">
       <span>Filter by assignee:</span>
       <select v-model="filterByAssigneeId">
@@ -33,6 +36,7 @@
       :actions="actions"
       @details="showDetails"
       @delete="deleteTask"
+      @edit="editTask"
       @update:modelValue="moveTask"
     />
   </div>
@@ -43,6 +47,7 @@ import { defineComponent } from 'vue';
 import Table from '@/components/Table.vue';
 import Modal from '@/components/Modal.vue';
 import TaskDetails from '@/components/TaskDetails.vue';
+import TaskForm from '@/components/TaskForm.vue';
 import { Task } from '@/store';
 
 export default defineComponent({
@@ -51,6 +56,7 @@ export default defineComponent({
     VTable: Table,
     Modal,
     TaskDetails,
+    TaskForm,
   },
   data() {
     return {
@@ -60,6 +66,8 @@ export default defineComponent({
       filterByAssigneeId: '',
       deleteModalOpened: false,
       taskToDelete: null,
+      editModalOpened: false,
+      taskToEdit: null,
     };
   },
   computed: {
@@ -86,6 +94,10 @@ export default defineComponent({
         {
           name: 'Delete',
           action: 'delete',
+        },
+        {
+          name: 'Edit',
+          action: 'edit',
         },
       ];
     },
@@ -130,6 +142,14 @@ export default defineComponent({
     closeDeleteModal() {
       this.deleteModalOpened = false;
       this.taskToDelete = null;
+    },
+    editTask(taskId: Task['id']) {
+      this.editModalOpened = true;
+      this.taskToEdit = this.$store.getters.getTaskById(taskId);
+    },
+    closeEditDialog() {
+      this.editModalOpened = false;
+      this.taskToEdit = null;
     },
   },
 });

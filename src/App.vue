@@ -57,4 +57,7 @@ export default defineComponent({});
   display: flex;
   margin: 0.5rem;
 }
+.input {
+  padding: 0.5rem;
+}
 </style>
