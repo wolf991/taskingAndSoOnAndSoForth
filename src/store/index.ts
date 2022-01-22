@@ -1,18 +1,19 @@
 import { createStore } from 'vuex';
 import { v4 as uuid } from 'uuid';
 
-interface User {
+export interface User {
   id: string,
   username: string,
   name: string,
   surname: string,
 }
 
-interface Task {
+export interface Task {
   id: string,
   reporter: User['id'],
   assignee: User['id'],
   topic: string,
+  description?: string,
 }
 
 const createTestUsers: () => User[] = () => [
@@ -42,6 +43,7 @@ const createTestTasks: (users: User[]) => Task[] = (users) => [
     reporter: users[1].id,
     assignee: users[0].id,
     topic: 'Task 2',
+    description: 'This be but a simple description.',
   },
 ];
 
@@ -52,6 +54,16 @@ export default createStore({
   state: {
     users,
     tasks,
+  },
+  getters: {
+    getAllUsers: (state) => state.users,
+    getAllTasks: (state) => state.tasks,
+    getUserById: (state) => (id: User['id']) => state.users.find((user) => user.id === id),
+    getTaskById: (state) => (id: Task['id']) => state.tasks.find((task) => task.id === id),
+    getUserFullNameById: (state, getters) => (id: User['id']) => {
+      const user = getters.getUserById(id);
+      return `${user.name} ${user.surname}`;
+    },
   },
   mutations: {
   },
