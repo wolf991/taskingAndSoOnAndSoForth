@@ -39,6 +39,8 @@ export default defineComponent({});
 }
 .card {
   display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
   border-radius: 5px;
   border: 1px solid black;
   background-color: white;

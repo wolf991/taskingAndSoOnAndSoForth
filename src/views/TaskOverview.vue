@@ -3,6 +3,22 @@
     <modal v-if="detailsModalOpened">
       <task-details :task="taskDetails" @close="closeDetailsModal" />
     </modal>
+    <modal v-if="deleteModalOpened">
+      <div class="card">
+        <span>Are you sure you want to delete task
+          <span class="bold-text">{{ taskToDelete.topic }}</span>?
+        </span>
+        <div>
+          <button @click="closeDeleteModal">Cancel</button>
+          <button
+            style="background-color: red"
+            @click="confirmDeleteTask(taskToDelete.id)"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </modal>
     <div class="filter-select">
       <span>Filter by assignee:</span>
       <select v-model="filterByAssigneeId">
@@ -16,6 +32,7 @@
       :headers="headers"
       :actions="actions"
       @details="showDetails"
+      @delete="deleteTask"
       @update:modelValue="moveTask"
     />
   </div>
@@ -41,6 +58,8 @@ export default defineComponent({
       detailsModalOpened: false,
       selectedTaskId: '',
       filterByAssigneeId: '',
+      deleteModalOpened: false,
+      taskToDelete: null,
     };
   },
   computed: {
@@ -63,6 +82,10 @@ export default defineComponent({
         {
           name: 'Details',
           action: 'details',
+        },
+        {
+          name: 'Delete',
+          action: 'delete',
         },
       ];
     },
@@ -95,6 +118,18 @@ export default defineComponent({
       if (e.moved) {
         this.$store.dispatch('moveTask', { taskId: e.moved.element[0], newPos: e.moved.newIndex });
       }
+    },
+    deleteTask(taskId: Task['id']) {
+      this.taskToDelete = this.$store.getters.getTaskById(taskId);
+      this.deleteModalOpened = true;
+    },
+    confirmDeleteTask(taskId: Task['id']) {
+      this.$store.dispatch('deleteTask', taskId)
+        .then(() => this.closeDeleteModal());
+    },
+    closeDeleteModal() {
+      this.deleteModalOpened = false;
+      this.taskToDelete = null;
     },
   },
 });
