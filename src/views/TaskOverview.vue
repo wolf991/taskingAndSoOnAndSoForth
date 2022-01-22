@@ -39,6 +39,7 @@
       @edit="editTask"
       @update:modelValue="moveTask"
     />
+    <button style="margin: 0.5rem" @click="addTask">Add Task</button>
   </div>
 </template>
 
@@ -149,6 +150,10 @@ export default defineComponent({
     },
     closeEditDialog() {
       this.editModalOpened = false;
+      this.taskToEdit = null;
+    },
+    addTask() {
+      this.editModalOpened = true;
       this.taskToEdit = null;
     },
   },

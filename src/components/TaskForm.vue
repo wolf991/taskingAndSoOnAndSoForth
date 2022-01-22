@@ -84,7 +84,11 @@ export default defineComponent({
         this.errors.push('Topic is required.');
       }
       if (this.errors.length === 0) {
-        this.$store.dispatch('updateTask', this.taskObj)
+        if (!this.taskObj.description) {
+          delete this.taskObj.description;
+        }
+        const action = this.task ? 'updateTask' : 'addTask';
+        this.$store.dispatch(action, this.taskObj)
           .then(() => this.$emit('close'))
           .catch((err) => {
             console.error(err);

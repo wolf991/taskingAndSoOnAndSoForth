@@ -93,6 +93,9 @@ export default createStore({
       const index = store.tasks.findIndex((t) => t.id === task.id);
       store.tasks.splice(index, 1, task);
     },
+    addTask: (store, task) => {
+      store.tasks.push(task);
+    },
   },
   actions: {
     moveTask: (context, { taskId, newPos }) => {
@@ -106,6 +109,12 @@ export default createStore({
     },
     updateTask: (context, task) => {
       context.commit('updateTask', task);
+      return new Promise((resolve) => {
+        resolve('ok');
+      });
+    },
+    addTask: (context, task) => {
+      context.commit('addTask', task);
       return new Promise((resolve) => {
         resolve('ok');
       });
